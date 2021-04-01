@@ -95,4 +95,71 @@ class PortfolioRepository implements PortfolioRepositoryInterface
         $result = $Post;
         return $result;
     }
+
+    /**
+     * function get all data
+     *
+     * @return \AHT\Portfolio\Api\Data\PortfolioInterface
+     */
+    public function getList()
+    {
+        $collection = $this->PostCollectionFactory->create();
+        return $collection->getData();
+    }
+
+    /**
+     * Create post.
+     *  
+     * @return \AHT\Portfolio\Api\Data\PortfolioInterface
+     * 
+     * @throws LocalizedException
+     */
+    public function createPost(PortfolioInterface $post)
+    {
+        try {
+            $this->resource->save($post);
+        } catch (\Exception $exception) {
+            throw new CouldNotSaveException(
+                __('Could not save the Post: %1', $exception->getMessage()),
+                $exception
+            );
+        }
+        return json_encode(array(
+            "status" => 200,
+            "message" => $post->getData()
+        ));
+        
+    }
+
+
+    public function updatePost(String $id, PortfolioInterface $post)
+    {
+
+        try {
+            $objPost = $this->PostFactory->create();
+            $id = intval($id);
+            $objPost->setId($id);
+            //Set full collum
+            $objPost->setData($post->getData());
+            $this->resource->save($objPost);
+
+            return $objPost->getData();
+        } catch (\Exception $exception) {
+            throw new CouldNotSaveException(
+                __('Could not save the Post: %1', $exception->getMessage()),
+                $exception
+            );
+        }
+    }
+
+    public function deleteById($postId)
+    {
+        $id = intval($postId);
+        if($this->resource->delete($this->getById($id))) {
+            return json_encode([
+                "status" => 200,
+                "message" => "Successfully"
+            ]);
+        }
+    }
 }
