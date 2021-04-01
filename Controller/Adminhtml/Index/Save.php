@@ -13,6 +13,7 @@ use Magento\Framework\Registry;
 use AHT\Portfolio\Api\PortfolioRepositoryInterface;
 use AHT\Portfolio\Model\Portfolio;
 use AHT\Portfolio\Model\PortfolioFactory;
+use AHT\Portfolio\Model\Portfolio\ImageUploader;
 
 /**
  * Save CMS block action.
@@ -35,17 +36,25 @@ class Save extends \AHT\Portfolio\Controller\Adminhtml\Portfolio implements Http
     private $blockRepository;
 
     /**
+     * @var ImageUploader
+     */
+    protected $imageUploader;
+    /**
+
+    /**
      * @param Context $context
      * @param Registry $coreRegistry
      * @param DataPersistorInterface $dataPersistor
      * @param BlockFactory|null $blockFactory
      * @param BlockRepositoryInterface|null $blockRepository
+     * @param ImageUploader $imageUploader
      */
     public function __construct(
         Context $context,
         Registry $coreRegistry,
         DataPersistorInterface $dataPersistor,
         PortfolioFactory $blockFactory = null,
+        ImageUploader $imageUploader,
         PortfolioRepositoryInterface $blockRepository = null
     ) {
         $this->dataPersistor = $dataPersistor;
@@ -53,6 +62,7 @@ class Save extends \AHT\Portfolio\Controller\Adminhtml\Portfolio implements Http
             ?: \Magento\Framework\App\ObjectManager::getInstance()->get(PortfolioFactory::class);
         $this->blockRepository = $blockRepository
             ?: \Magento\Framework\App\ObjectManager::getInstance()->get(PortfolioRepositoryInterface::class);
+        $this->imageUploader = $imageUploader;
         parent::__construct($context, $coreRegistry);
 
     }
@@ -89,6 +99,15 @@ class Save extends \AHT\Portfolio\Controller\Adminhtml\Portfolio implements Http
                 }
             }
 
+            $data2 = $data;
+            if (isset($data2['image'][0]['name'])) {
+                $data2['images'] = $data['image'][0]['name'];
+                $imageName = $data2['images'];
+            }else{
+                $imageName = '';
+            }
+            $data['images'] = $imageName;
+
             $model->setData($data);      
             
             try {
@@ -96,6 +115,9 @@ class Save extends \AHT\Portfolio\Controller\Adminhtml\Portfolio implements Http
                 $model->save();
                 $this->messageManager->addSuccessMessage(__('You saved the block.'));
                 $this->dataPersistor->clear('fortfolio');
+                if ($imageName){
+                    $this->imageUploader->moveFileFromTmp($imageName);
+                }
                 return $this->processBlockReturn($model, $data, $resultRedirect);
             } catch (LocalizedException $e) {
                 $this->messageManager->addErrorMessage($e->getMessage());
