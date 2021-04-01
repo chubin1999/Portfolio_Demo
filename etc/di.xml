@@ -36,4 +36,6 @@
         </arguments>
     </type>
     <!-- End Configure -->
+    <preference for="AHT\Portfolio\Api\PortfolioRepositoryInterface" type="AHT\Portfolio\Model\PortfolioRepository"/>
+    <preference for="AHT\Portfolio\Api\Data\PortfolioInterface" type="AHT\Portfolio\Model\Portfolio"/>
 </config>
