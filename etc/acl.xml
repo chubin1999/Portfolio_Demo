@@ -5,7 +5,14 @@
             <resource id="Magento_Backend::admin">
                 <resource id="AHT_Portfolio::portfolio" title="Portfolio Menu">
                     <resource id="AHT_Portfolio::index" title="Index Page" sortOrder="70" />
-                   <!--  <resource id="AHT_Portfolio::category" title="Category Page" sortOrder="70" /> -->
+                    <!--  <resource id="AHT_Portfolio::category" title="Category Page" sortOrder="70" /> -->
+                </resource>
+                <resource id="Magento_Backend::stores">
+                    <resource id="Magento_Backend::stores_settings">
+                        <resource id="Magento_Config::config">
+                            <resource id="AHT_Portfolio::config_portfolio" title="Portfolio Section" />
+                        </resource>
+                    </resource>
                 </resource>
             </resource>
         </resources>
